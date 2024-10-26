@@ -1,7 +1,7 @@
 #include "client.h"
 
 client_info* establish_connection(int port, int buff_size) {
-    int status, client_fd, new_socket;
+    int status, client_fd;
     struct sockaddr_in serv_address;
     int opt = 1;
     if ((client_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
@@ -24,7 +24,7 @@ client_info* establish_connection(int port, int buff_size) {
     }
 
     client_info* ci = (client_info*) malloc(sizeof(client_info));
-    ci->client_socket = new_socket;
+    ci->client_socket = status;
     ci->address = serv_address;
     ci->buffer = (char*) malloc(buff_size);
     if (ci->buffer == NULL) {
