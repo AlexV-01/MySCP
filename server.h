@@ -8,6 +8,8 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netinet/in.h>
+#include <netdb.h>
+#include <errno.h>
 
 typedef struct server_info {
     int server_socket;
@@ -17,7 +19,7 @@ typedef struct server_info {
 
 /* Creates a server socket with a given buffer size, and listens for connection.
 Returns `server_info` struct pointer or NULL on failure. */
-server_info* create_server(int port, int buff_size);
+server_info* create_server(int port, char* client_hostname, int buff_size);
 
 /* Cleanup for server. */
 void destroy_server(server_info* si);
@@ -26,6 +28,6 @@ void destroy_server(server_info* si);
 void send_data(server_info* si);
 
 /* Transfers the file. Returns 0 on success and 1 on failure. */
-int transfer_file(int fd, int port, int buff_size);
+int transfer_file(int fd, char* client_hostname, int port, int buff_size);
 
 #endif

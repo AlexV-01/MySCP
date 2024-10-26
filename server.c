@@ -1,6 +1,6 @@
 #include "server.h"
 
-server_info* create_server(int port, int buff_size) {
+server_info* create_server(int port, char* client_hostname, int buff_size) {
     int server_fd, new_socket;
     struct sockaddr_in address;
     socklen_t address_len = sizeof(address);
@@ -28,11 +28,20 @@ server_info* create_server(int port, int buff_size) {
         perror("unable to listen for connection");
         exit(EXIT_FAILURE);
     }
+    printf("Listening for connection\n");
 
     if ((new_socket = accept(server_fd, (struct sockaddr*) &address, &address_len)) < 0) {
         perror("unable to accept connection");
         exit(EXIT_FAILURE);
     }
+
+    char hostname[NI_MAXHOST] = {};
+    getnameinfo((struct sockaddr*)&address, address_len, hostname, sizeof(hostname), NULL, 0, 0);
+    if (strcmp(hostname, client_hostname) != 0) {
+        fprintf(stderr, "bad client, aborting\n");
+        exit(EXIT_FAILURE);
+    }
+    printf("Connection accepted with %s\n", client_hostname);
 
     server_info* si = (server_info*) malloc(sizeof(server_info));
     si->server_socket = new_socket;
@@ -55,9 +64,9 @@ void send_data(server_info* si) {
     send(si->server_socket, si->buffer, strlen(si->buffer), 0);
 }
 
-int transfer_file(int fd, int port, int buff_size) {
+int transfer_file(int fd, char* client_hostname, int port, int buff_size) {
     // Setup server socket
-    server_info* server = create_server(port, buff_size);
+    server_info* server = create_server(port, client_hostname, buff_size);
 
     // Send data to client
     while (1) {
