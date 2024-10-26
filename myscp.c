@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
         char* server_hostname = argv[2];
         int fd = open(argv[3], O_WRONLY | O_APPEND);
         // Receive the file at client from server
-        if (receive_file(fd, PORT, BUFFER_SIZE) == 1) {
+        if (receive_file(fd, PORT, server_hostname, (int) BUFFER_SIZE) == 1) {
             fprintf(stderr, "unable to transfer file\n");
             exit(EXIT_FAILURE);
         }
