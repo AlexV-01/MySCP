@@ -24,7 +24,7 @@ client_info* establish_connection(int port, int buff_size) {
     }
 
     client_info* ci = (client_info*) malloc(sizeof(client_info));
-    ci->client_socket = status;
+    ci->client_socket = client_fd;
     ci->address = serv_address;
     ci->buffer = (char*) malloc(buff_size);
     if (ci->buffer == NULL) {
@@ -41,5 +41,5 @@ char* receive_data(client_info* ci, int buff_size) {
 }
 
 int receive_file(int fd, int port, int buff_size) {
-    
+
 }
