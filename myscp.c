@@ -1,28 +1,34 @@
 #include "myscp.h"
 
 int main(int argc, char** argv) {
-    // check arguments 
+    // Check argument count
     if (argc != 4){
-        fprintf(stderr, "Incorrect number of arguments. Provide <flag>, <source_file> and <remote_server>\n");
+        fprintf(stderr, "usages:\nmyscp -s <source_file> <client_hostname>\nmyscp -c <server_hostname> <destination_path>\n");
         exit(EXIT_FAILURE);
     }
-    //flag (either "-s" or "-c") indicates WHO WE ARE
-    char *flag = argv[1]; 
-    char *dest, *file;
 
-    // determine which remote to open
-    if (strcmp(flag, "-s") == 0) {
-        file = argv[2];
-        dest = argv[3];
-        // open DEST as client and Local as server
+    // Flag indicates client or server mode
+    char* mode = argv[1]; 
+
+    if (strcmp(mode, "-s") == 0) {
+        int fd = open(argv[2], O_RDONLY);
+        char* client_hostname = argv[3];
+        // Send the file from server to client
+        if (transfer_file(fd, client_hostname, PORT, BUFFER_SIZE) == 1) {
+            fprintf(stderr, "unable to transfer file\n");
+            exit(EXIT_FAILURE);
+        }
+        close(fd);
+        printf("Transfer complete\n");
+    } else if (strcmp(mode, "-c") == 0) {
+        char* server_hostname = argv[2];
+        int fd = open(argv[3], O_WRONLY);
+        // Receive the file at client from server
 
     } else {
-        file = argv[3];
-        dest = argv[2];
-        // open DEST as server and Local as client
-
+        fprintf(stderr, "invalid mode (use either -s or -c)\n");
+        exit(EXIT_FAILURE);
     }
-
 
     return EXIT_SUCCESS;
 }
