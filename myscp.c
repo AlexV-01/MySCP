@@ -3,7 +3,7 @@
 
 /* Determine if WE are the server*/
 int isServer(char* flag){
-    return flag=="-s"; 
+    return strcmp(flag,"-s")==0; 
 }
 
 int main(int argc, char** argv) {

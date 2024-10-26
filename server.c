@@ -54,12 +54,6 @@ void send_data(server_info* si) {
     send(si->server_socket, si->buffer, strlen(si->buffer), 0);
 }
 
-char* receive_data(server_info* si) {
-    ssize_t bytes_read = read(si->server_socket, si->buffer, BUFFER_SIZE - 1);
-    if (bytes_read == -1) return NULL;
-    return si->buffer;
-}
-
 int transfer_file(int fd) {
     // Setup server socket
     server_info* server = create_server(BUFFER_SIZE);
