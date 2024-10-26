@@ -1,22 +1,23 @@
 #include "server.h"
 
-server_info* create_server(int buff_size) {
+server_info* create_server(int port, int buff_size) {
     int server_fd, new_socket;
     struct sockaddr_in address;
+    socklen_t address_len = sizeof(address);
     int opt = 1;
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         perror("unable to create server socket");
         exit(EXIT_FAILURE);
     }
 
-    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt))) {
         perror("unable to set socket options");
         exit(EXIT_FAILURE);
     }
 
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons(PORT);
+    address.sin_port = htons(port);
 
     if (bind(server_fd, (struct sockaddr*) &address, sizeof(address)) < 0) {
         perror("unable to bind socket to address and port");
@@ -28,7 +29,7 @@ server_info* create_server(int buff_size) {
         exit(EXIT_FAILURE);
     }
 
-    if ((new_socket = accept(server_fd, (struct sockaddr*) &address, sizeof(address))) < 0) {
+    if ((new_socket = accept(server_fd, (struct sockaddr*) &address, &address_len)) < 0) {
         perror("unable to accept connection");
         exit(EXIT_FAILURE);
     }
@@ -54,19 +55,13 @@ void send_data(server_info* si) {
     send(si->server_socket, si->buffer, strlen(si->buffer), 0);
 }
 
-char* receive_data(server_info* si) {
-    ssize_t bytes_read = read(si->server_socket, si->buffer, BUFFER_SIZE - 1);
-    if (bytes_read == -1) return NULL;
-    return si->buffer;
-}
-
-int transfer_file(int fd) {
+int transfer_file(int fd, int port, int buff_size) {
     // Setup server socket
-    server_info* server = create_server(BUFFER_SIZE);
+    server_info* server = create_server(port, buff_size);
 
     // Send data to client
     while (1) {
-        ssize_t bytes_read = read(fd, server->buffer, BUFFER_SIZE);
+        ssize_t bytes_read = read(fd, server->buffer, buff_size);
         if (bytes_read == 0) break;
         send_data(server);
     }
