@@ -18,7 +18,10 @@ typedef struct client_info {
 Returns `client_info` struct pointer or NULL on failure. */
 client_info* establish_connection(int port, int buff_size);
 
-/* Receives data from client. Returns data. */
+/* Receives data from server. Returns data. */
 char* receive_data(client_info* ci, int buff_size);
+
+/* Receives the file. Returns 0 on success and 1 on failure. */
+int receive_file(int fd, int port, int buff_size);
 
 #endif

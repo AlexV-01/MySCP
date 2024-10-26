@@ -34,14 +34,12 @@ client_info* establish_connection(int port, int buff_size) {
     return ci;
 }
 
-void destroy_client(client_info* ci) {
-    close(ci->client_socket);
-    free(ci->buffer);
-    free(ci);
-}
-
 char* receive_data(client_info* ci, int buff_size) {
     ssize_t bytes_read = read(ci->client_socket, ci->buffer, buff_size - 1);
     if (bytes_read == -1) return NULL;
     return ci->buffer;
+}
+
+int receive_file(int fd, int port, int buff_size) {
+    
 }

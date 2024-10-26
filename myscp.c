@@ -22,9 +22,14 @@ int main(int argc, char** argv) {
         printf("Transfer complete\n");
     } else if (strcmp(mode, "-c") == 0) {
         char* server_hostname = argv[2];
-        int fd = open(argv[3], O_WRONLY);
+        int fd = open(argv[3], O_WRONLY | O_APPEND);
         // Receive the file at client from server
-
+        if (receive_file(fd, PORT, BUFFER_SIZE) == 1) {
+            fprintf(stderr, "unable to transfer file\n");
+            exit(EXIT_FAILURE);
+        }
+        close(fd);
+        printf("Transfer complete\n");
     } else {
         fprintf(stderr, "invalid mode (use either -s or -c)\n");
         exit(EXIT_FAILURE);
