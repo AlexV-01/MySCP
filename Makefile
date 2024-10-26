@@ -1,19 +1,20 @@
 CC = gcc
-CFLAGS = -g -c -fsanitize=address,undefined
+CFLAGS = -Wall -g -fsanitize=address,undefined
 
-EXEC = myscp
+all: myscp
+	make clean
 
-SRC = myscp.c client.c server.c
+myscp: myscp.o client.o server.o
+	$(CC) $(CFLAGS) -o myscp myscp.o client.o server.o
 
-OBJ = $(SRC:.c=.o)
+myscp.o: myscp.c myscp.h
+	$(CC) $(CFLAGS) -c myscp.c
 
-all: $(EXEC)
+client.o: client.c client.h
+	$(CC) $(CFLAGS) -c client.c
 
-$(EXEC): $(OBJ)
-	$(CC) $(CFLAGS) -o $(EXEC) $(OBJ)
-
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+server.o: server.c server.h
+	$(CC) $(CFLAGS) -c server.c
 
 clean:
-	rm -rf testfile *.o *.a
+	rm -f *.o
